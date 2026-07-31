@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AMApplicationBuild</key>
+	<string>534</string>
+	<key>AMApplicationVersion</key>
+	<string>2.10</string>
+	<key>AMDocumentVersion</key>
+	<string>2</string>
+	<key>actions</key>
+	<array>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>1.0.2</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run AppleScript.action</string>
+				<key>ActionName</key>
+				<string>Run AppleScript</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>source</key>
+					<string>(*
+-------------------------------------------------------
+Move To…
+Finder Quick Action
+
+Version: 2.0
+Author: Dom Caracappa
+License: MIT
+
+Moves selected Finder items to a destination chosen
+by the user.
+
+Features
+---------
+• Remembers last destination
+• Duplicate detection
+• Replace / Skip / Cancel
+• Friendly notifications
+
+Compatible:
+macOS Sonoma+
+-------------------------------------------------------
+*)property version : "2.0.0"property PLAY_SOUND : trueproperty SOUND_NAME : "Glass"on run {input, parameters}		--------------------------------------------------	-- Preferences	--------------------------------------------------		set prefsFile to POSIX path of (path to library folder from user domain) &amp; "Preferences/com.moveto.lastfolder"		--------------------------------------------------	-- Validate Selection	--------------------------------------------------		if input is {} then		display alert "Move To…" message "No files or folders were selected."		return input	end if		--------------------------------------------------	-- Load Last Destination	--------------------------------------------------		set defaultLocation to (path to home folder)		try		set lastPath to do shell script "/bin/cat " &amp; quoted form of prefsFile				try			do shell script "test -d " &amp; quoted form of lastPath			set defaultLocation to POSIX file lastPath		end try	end try		--------------------------------------------------	-- Choose Destination	--------------------------------------------------		set destinationFolder to ¬		choose folder with prompt ¬			"Move selected items to:" default location defaultLocation		set destPath to POSIX path of destinationFolder		--------------------------------------------------	-- Save Destination	--------------------------------------------------		do shell script "/bin/mkdir -p " &amp; quoted form of (POSIX path of (path to library folder from user domain) &amp; "Preferences")		do shell script "/bin/echo " &amp; quoted form of destPath &amp; " &gt; " &amp; quoted form of prefsFile		--------------------------------------------------	-- Move Items	--------------------------------------------------		set movedCount to 0	set skippedCount to 0		repeat with anItem in input				set sourcePath to POSIX path of (anItem as alias)				tell application "System Events"			set itemName to name of disk item sourcePath		end tell				set destinationItem to destPath &amp; itemName				set existsAlready to false				try			do shell script "test -e " &amp; quoted form of destinationItem			set existsAlready to true		end try				if existsAlready then			set dialogMessage to "A file or folder named:" &amp; return &amp; return &amp; ¬				"“" &amp; itemName &amp; "”" &amp; return &amp; return &amp; ¬				"already exists in:" &amp; return &amp; return &amp; ¬				destPath &amp; return &amp; return &amp; ¬				"What would you like to do?"						set userChoice to button returned of (display dialog dialogMessage ¬				buttons {"Skip", "Replace", "Cancel"} ¬				default button ¬				"Skip" with title "Duplicate Item")						if userChoice is "Cancel" then				return input							else if userChoice is "Skip" then				set skippedCount to skippedCount + 1							else if userChoice is "Replace" then				do shell script "/bin/rm -rf " &amp; quoted form of destinationItem				do shell script "/bin/mv " &amp; quoted form of sourcePath &amp; " " &amp; quoted form of destPath				set movedCount to movedCount + 1			end if					else						do shell script "/bin/mv " &amp; quoted form of sourcePath &amp; " " &amp; quoted form of destPath			set movedCount to movedCount + 1					end if			end repeat		--------------------------------------------------	-- Completion Notification	--------------------------------------------------		if PLAY_SOUND then		try			do shell script "afplay /System/Library/Sounds/" &amp; SOUND_NAME &amp; ".aiff"		end try	end if	return inputend run</string>
+				</dict>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.RunScript</string>
+				<key>CFBundleVersion</key>
+				<string>1.0.2</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunScriptAction</string>
+				<key>InputUUID</key>
+				<string>C51BE25B-B3A7-4E24-AB0E-7E2C53ACDBF6</string>
+				<key>Keywords</key>
+				<array>
+					<string>Run</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>BA7723D9-6FBC-4D41-B270-C33068AE523D</string>
+				<key>UUID</key>
+				<string>33B7CD18-4009-4EBB-BA36-821C63B1732A</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string>on run {input, parameters}
+	
+	(* Your script goes here *)
+	
+	return input
+end run</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<integer>1</integer>
+				<key>location</key>
+				<string>462.000000:878.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>connectors</key>
+	<dict/>
+	<key>workflowMetaData</key>
+	<dict>
+		<key>applicationBundleID</key>
+		<string>com.apple.finder</string>
+		<key>applicationBundleIDsByPath</key>
+		<dict>
+			<key>/System/Library/CoreServices/Finder.app</key>
+			<string>com.apple.finder</string>
+		</dict>
+		<key>applicationPath</key>
+		<string>/System/Library/CoreServices/Finder.app</string>
+		<key>applicationPaths</key>
+		<array>
+			<string>/System/Library/CoreServices/Finder.app</string>
+		</array>
+		<key>inputTypeIdentifier</key>
+		<string>com.apple.Automator.fileSystemObject</string>
+		<key>outputTypeIdentifier</key>
+		<string>com.apple.Automator.nothing</string>
+		<key>presentationMode</key>
+		<integer>15</integer>
+		<key>processesInput</key>
+		<false/>
+		<key>serviceApplicationBundleID</key>
+		<string>com.apple.finder</string>
+		<key>serviceApplicationPath</key>
+		<string>/System/Library/CoreServices/Finder.app</string>
+		<key>serviceInputTypeIdentifier</key>
+		<string>com.apple.Automator.fileSystemObject</string>
+		<key>serviceOutputTypeIdentifier</key>
+		<string>com.apple.Automator.nothing</string>
+		<key>serviceProcessesInput</key>
+		<false/>
+		<key>systemImageName</key>
+		<string>NSActionTemplate</string>
+		<key>useAutomaticInputType</key>
+		<false/>
+		<key>workflowTypeIdentifier</key>
+		<string>com.apple.Automator.servicesMenu</string>
+	</dict>
+</dict>
+</plist>
